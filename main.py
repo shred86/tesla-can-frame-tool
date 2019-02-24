@@ -65,7 +65,13 @@ def energyBuffer():
 
 # Not reported by BMS obviously, just calculated and rounded
 def socDisplayed():
-    return round((nominalEnergyRemaining() / nominalFullPackEnergy()) * 100)
+    return round((nominalEnergyRemaining() - energyBuffer())
+                 / (nominalFullPackEnergy() - energyBuffer()) * 100)
+
+
+# Not reported on CAN bus, just calculated - should match socUI
+def socNominal():
+    return (nominalEnergyRemaining() / nominalFullPackEnergy()) * 100
 
 
 # Convert 0x338 data to human readable format
@@ -86,7 +92,6 @@ def socMin():
 def socUI():
     return (b1 >> 2) + ((b2 & 0xF) << 6) / 10.0
 
-
 # Print results based on canID
 if canID == '382':
     print("Nominal Full Pack Energy: " + str(nominalFullPackEnergy()) + KWH)
@@ -94,7 +99,9 @@ if canID == '382':
     print("Expected Energy Remaining: " + str(expectedEnergyRemaining()) + KWH)
     print("Ideal Energy Remaining: " + str(idealEnergyRemaining()) + KWH)
     print("Energy Buffer: " + str(energyBuffer()) + KWH)
-    print("Displayed SOC: " + str(socDisplayed()) + PCT + "\n")
+    print("*Displayed SOC: " + str(socDisplayed()) + PCT)
+    print("*Nominal SOC: " + str(socNominal()) + PCT)
+    print("*Calculated values (not reported on CAN bus).\n")
 elif canID == '338':
     print("Rated range: " + str(ratedRange()) + MILES)
     print("Typical range: " + str(typicalRange()) + MILES + "\n")
@@ -102,4 +109,4 @@ elif canID == '302':
     print("SOC Min: " + str(socMin()) + PCT)
     print("SOC UI: " + str(socUI()) + PCT + "\n")
 else:
-    print("CAN ID unknown" + "\n")
+    print("CAN ID not yet supported" + "\n")

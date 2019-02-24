@@ -3,7 +3,7 @@
 Simple python tool to convert raw Tesla CAN bus frames into a human readable format. The raw CAN bus frames are from TM-Spy. Only a few CAN IDs are currently supported. Created for my personal use but feel free to use it as you see fit.
 
 ## Usage
-Using python3,run main.py from the terminal and paste in the CAN bus frame when asked.
+Using python3, run main.py from the terminal and paste in the CAN bus frame when asked.
 
 ```
 python3 main.py
