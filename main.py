@@ -17,11 +17,13 @@ PCT = ' %'
 # Get full CAN frame from user
 canFrameInput = input('Enter the full CAN frame: ')
 
-# Remove first 3-digits (CAN ID) and last four digits (g-force)
+# Remove first 3-digits (CAN ID)
 canID = canFrameInput[0:3]
 
+# Check if CAN frame is from TM-Spy recording
 if len(canFrameInput) == 23:
     canFrame = canFrameInput[3:19]
+# Check if CAN frame is from Trace log
 elif len(canFrameInput) == 19:
     canFrame = canFrameInput[3:]
 else:
@@ -59,6 +61,10 @@ def idealEnergyRemaining():
     return ((b3 >> 6) + ((b4 & 0xFF) * 4)) * 0.1
 
 
+def energyToChargeComplete():
+    return (b5 + ((b6 & 0x03) << 8)) * 0.1
+
+
 def energyBuffer():
     return ((b6 >> 2) + ((b7 & 0x03) * 64)) * 0.1
 
@@ -88,9 +94,9 @@ def socMin():
     return (b0 + ((b1 & 0x3) << 8)) / 10.0
 
 
-###### Something is wrong with this - value is too high
 def socUI():
-    return (b1 >> 2) + ((b2 & 0xF) << 6) / 10.0
+    return ((b1 >> 2) + ((b2 & 0xF) << 6)) / 10.0
+
 
 # Print results based on canID
 if canID == '382':
@@ -98,6 +104,7 @@ if canID == '382':
     print("Nominal Energy Remaining: " + str(nominalEnergyRemaining()) + KWH)
     print("Expected Energy Remaining: " + str(expectedEnergyRemaining()) + KWH)
     print("Ideal Energy Remaining: " + str(idealEnergyRemaining()) + KWH)
+    print("Energy to Charge Complete: " + str(energyToChargeComplete()) + KWH)
     print("Energy Buffer: " + str(energyBuffer()) + KWH)
     print("*Displayed SOC: " + str(socDisplayed()) + PCT)
     print("*Nominal SOC: " + str(socNominal()) + PCT)
