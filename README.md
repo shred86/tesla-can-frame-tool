@@ -10,4 +10,6 @@ python3 main.py
 ```
 
 ## Credits
-Jason Hugh's (wk057) for his [CAN Bus Deciphering PDF](https://skie.net/uploads/TeslaCAN/Tesla%20Model%20S%20CAN%20Deciphering%20-%20v0.1%20-%20by%20wk057.pdf).
+Jason Hugh's (wk057) [CAN Bus Deciphering PDF](https://skie.net/uploads/TeslaCAN/Tesla%20Model%20S%20CAN%20Deciphering%20-%20v0.1%20-%20by%20wk057.pdf).
+amund7's [Scan My Tesla's source code](https://github.com/amund7/ScanMyTesla).
+apach3guy's [CAN3 source code](https://github.com/apach3guy/CAN3).

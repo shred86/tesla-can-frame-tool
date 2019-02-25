@@ -1,8 +1,10 @@
 """
 tesla-can-frame-tool by shred86
 
-All of the CAN frame deciphering was used from Jason Hugh's
+CAN frame deciphering was based on Jason Hugh's
 Tesla Model S CAN Bus Deciphering guide.
+
+amund7's Scan My Tesla & apach3guy's CAN3 for helping guide me.
 
 Raw CAN frame examples from TM-Spy:
 
@@ -13,6 +15,8 @@ Raw CAN frame examples from TM-Spy:
 KWH = ' kWh'
 MILES = ' miles'
 PCT = ' %'
+VOLTS = ' volts'
+AMPS = ' amps'
 
 # Get full CAN frame from user
 canFrameInput = input('Enter the full CAN frame: ')
@@ -69,10 +73,9 @@ def energyBuffer():
     return ((b6 >> 2) + ((b7 & 0x03) * 64)) * 0.1
 
 
-# Not reported by BMS obviously, just calculated and rounded
+# Not reported by BMS obviously, but it should match the car display
 def socDisplayed():
-    return round((nominalEnergyRemaining() - energyBuffer())
-                 / (nominalFullPackEnergy() - energyBuffer()) * 100)
+    return (nominalEnergyRemaining() - energyBuffer()) / (nominalFullPackEnergy() - energyBuffer()) * 100
 
 
 # Not reported on CAN bus, just calculated - should match socUI
@@ -98,6 +101,20 @@ def socUI():
     return ((b1 >> 2) + ((b2 & 0xF) << 6)) / 10.0
 
 
+# Convert 0x232 data to human readable format
+def odometer():
+    return (b0 + (b1 << 8) + (b2 << 16) + (b3 << 24)) / 1000
+
+
+# Convert 0x102 data to human readable format
+def battVoltage():
+    return (b0 | b1 << 8) / 100.0
+
+
+def battCurrent():
+    return (((b2 + ((b3 & 0x3F) << 8)) - ((b3 & 0x40) << 8)) - 10000) / 10.0
+
+
 # Print results based on canID
 if canID == '382':
     print("Nominal Full Pack Energy: " + str(nominalFullPackEnergy()) + KWH)
@@ -115,5 +132,10 @@ elif canID == '338':
 elif canID == '302':
     print("SOC Min: " + str(socMin()) + PCT)
     print("SOC UI: " + str(socUI()) + PCT + "\n")
+elif canID == '232':
+    print("Odometer: " + str(odometer()))
+elif canID == '102':
+    print("Battery Voltage: " + str(battVoltage()) + VOLTS)
+    print("Battery Current: " + str(battCurrent()) + AMPS)
 else:
     print("CAN ID not yet supported" + "\n")
